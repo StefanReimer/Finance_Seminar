@@ -14,22 +14,7 @@ def data_import_chunkwise(filePath):
     print("The loaded data frame has " + str(data.shape[0]) + " rows and " + str(data.shape[1]) + " columns.")
     return data
 
-def replace_hardcoded_columnames(df):
-    newColumnNames = np.array(['FilingDate', 'IssueDate', 'Issuer', 'State', 'Nation',
-                               'IPOFlag(Y/N)', 'OriginalIPOFlag(Y/N)', 'OfferPrice',
-                               'TypeOfSecurity', 'Description', 'REITTypeCode',
-                               'UnitInv.Trust', 'Depositary', ' DealNumber',
-                               'Closed-endFund/TrustFlag(Y/N)', 'CUSIP', '9-DigitCUSIP',
-                               'ProceedsAmt-inThisMkt($mil)', 'VentureBacked',
-                               'GrossSpreadAs%ofPrncplAmt-inThisMkt',
-                               'AllMgrRoleCode', 'PrimaryHi-TechIndustryCode',
-                               'OriginalLowFilingPrice', 'OriginalHighFilingPrice',
-                               'LowPriceOfFilingPriceRange',
-                               'HighPriceOfFilingPriceRange'])
-    df.columns = newColumnNames
-    return df
-
-def convert_NAs(data, column):
+def convert_NAs(data, column, print_bool = True):
     """
     function to convert NAs as np.NaN in a dataFrame    
     @param df: dataFrame with NAs
@@ -45,8 +30,9 @@ def convert_NAs(data, column):
     df.loc[:, column] = df[column].replace('NaN', np.NAN)
     na_amount_after = df[column].isna().sum()
     nonna_amount_after = df[column].notna().sum()
-    print(f"{na_amount_after - na_amount_before} NAs have been created. "
-          f"{nonna_amount_after} valid values are left. \n")    
+    if(print_bool):
+        print(f"{na_amount_after - na_amount_before} NAs have been created. "
+              f"{nonna_amount_after} valid values are left. \n")    
     return df
 
 def get_duplicates(df, column, comment=''):
@@ -56,7 +42,7 @@ def get_duplicates(df, column, comment=''):
     print(f'There are {duplicates_sum} duplicates in {column}{comment}.')
     return duplicates
 
-def find_char_in_colnames(df, char_to_find):
+def find_char_in_colnames(df, char_to_find, print_bool = True):
     """ function to find colnames in a dataFrame with matching subcharacters
     @param df: dataFrame to search the columns
     @ param char_to_find: character, which should be searched for as substring in the dataframe
@@ -64,16 +50,15 @@ def find_char_in_colnames(df, char_to_find):
     """
     col_names = df.columns.values
     matching_col_names = col_names[[char_to_find in i for i in col_names]]
-    print(
-        f"columns containing <<{char_to_find}>> are:"
-        "\n"
-        f"{matching_col_names}"
-        "\n")
-    #print(matching_col_names)
-    #print('\t')
+    if(print_bool):
+        print(
+            f"columns containing <<{char_to_find}>> are:"
+            "\n"
+            f"{matching_col_names}"
+            "\n")
     return matching_col_names
 
-def convert_date(df, column, format='%Y-%m-%d', errors = 'raise'):
+def convert_date(df, column, format='%Y-%m-%d', errors = 'raise', print_bool = True):
     """
     function to convert characters to pandas datetime column in a dataFrame and print NA information.
     
@@ -87,12 +72,13 @@ def convert_date(df, column, format='%Y-%m-%d', errors = 'raise'):
     df[column] = pd.to_datetime(df[column], format=format, errors=errors)
     na_amount_after = df[column].isna().sum()
     nonna_amount_after = df[column].notna().sum()
-    print(f"{column} has been converted. \n"
-          f"{na_amount_after - na_amount_before} NAs have been created. "
-          f"{nonna_amount_after} valid values are left. \n")    
+    if(print_bool):
+        print(f"{column} has been converted. \n"
+              f"{na_amount_after - na_amount_before} NAs have been created. "
+              f"{nonna_amount_after} valid values are left. \n")    
     return df
 
-def convert_price(data, column, errors = 'raise'):
+def convert_price(data, column, errors = 'raise', print_bool = True):
     """
     function to convert characters to numeric column in a dataFrame and print NA information.
     
@@ -110,9 +96,10 @@ def convert_price(data, column, errors = 'raise'):
     df.loc[:, column] = pd.to_numeric(df.loc[:, column], errors=errors)
     na_amount_after = df[column].isna().sum()
     nonna_amount_after = df[column].notna().sum()
-    print(f"{column} has been converted. \n"
-          f"{na_amount_after - na_amount_before} NAs have been created. "
-          f"{nonna_amount_after} valid values are left. \n")    
+    if(print_bool):
+        print(f"{column} has been converted. \n"
+              f"{na_amount_after - na_amount_before} NAs have been created. "
+              f"{nonna_amount_after} valid values are left. \n")    
     return df
 
 # TODO: replace linebreak in array values
