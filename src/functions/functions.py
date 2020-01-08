@@ -4,15 +4,25 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-def data_import_chunkwise(filePath):
+def data_import_chunkwise(filePath, chunksize=1000):
     logging.info("loading started...")
     data = pd.DataFrame()
-    chunks = pd.read_csv(filePath, delimiter=",", header=0, chunksize=1000)
+    chunks = pd.read_csv(filePath, delimiter=",", header=0, chunksize=chunksize)
     for chunk in chunks:
         data = data.append(chunk, ignore_index=True)
     logging.info("loading finished.")
     print("The loaded data frame has " + str(data.shape[0]) + " rows and " + str(data.shape[1]) + " columns.")
     return data
+
+def min_max_print(df, column):
+    """
+    function to print the min and max value of a column
+    @param df: dataFrame containing choosen column
+    @param column: column as string, for which the min and max should be printed
+    """
+    min_value = df[column].min()
+    max_value = df[column].max()
+    print(f'[{column}] min: {min_value}, max: {max_value}')
 
 def convert_NAs(data, column, print_bool = True):
     """
@@ -101,6 +111,16 @@ def convert_price(data, column, errors = 'raise', print_bool = True):
               f"{na_amount_after - na_amount_before} NAs have been created. "
               f"{nonna_amount_after} valid values are left. \n")    
     return df
+
+def create_PERMNO_txt_file(df, column, file_name, path=""):
+    """
+    creates txt file with choosen PERMNO names
+    @param df: dataframe which contains the columns
+    @param column: column to write in txt file
+    @param path: path to save the data to
+    @param file_name: file name of the .txt-file; without the .txt suffix
+    """
+    np.savetxt(path + file_name + '.txt', df[column].values, fmt='%s')
 
 # TODO: replace linebreak in array values
 # def replaceLinebreak(string):
